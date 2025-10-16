@@ -1,0 +1,5 @@
+{
+  "name": "Café POS System",
+  "description": "A multi-tenant café Point of Sale (POS) system for managing menus, orders, and payments. Customers can scan a QR code to order from their table, while managers and admins have dedicated dashboards to manage operations.",
+  "requestFramePermissions": []
+}

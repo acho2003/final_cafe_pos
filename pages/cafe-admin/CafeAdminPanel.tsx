@@ -6,6 +6,7 @@ import { MenuItem, User, UserRole, Order, OrderStatus, Cafe } from '../../types'
 import { Modal, ConfirmationModal } from '../../components/ui/Modal';
 import { PlusCircle, Edit, Trash2, QrCode, Download, ClipboardList, Menu, Users, DollarSign } from '../../components/Icons';
 import ManagerDashboard from '../manager/ManagerDashboard';
+import imageCompression from 'browser-image-compression';
 
 // --- Menu Management ---
 const MenuManagement: React.FC = () => {
@@ -15,6 +16,9 @@ const MenuManagement: React.FC = () => {
     const [currentItem, setCurrentItem] = useState<Partial<MenuItem> | null>(null);
     const [itemToDelete, setItemToDelete] = useState<MenuItem | null>(null);
     const [categories, setCategories] = useState<string[]>([]);
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
 
     const fetchMenuItems = useCallback(async () => {
         if (!currentUser?.cafeId) return;
@@ -30,28 +34,67 @@ const MenuManagement: React.FC = () => {
 
     const handleOpenModal = (item?: MenuItem) => {
         setCurrentItem(item || { cafeId: currentUser?.cafeId });
+        setImageFile(null);
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setCurrentItem(null);
+        setImageFile(null);
+    };
+
+    const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const options = {
+                maxSizeMB: 1,
+                maxWidthOrHeight: 1024,
+                useWebWorker: true,
+            };
+            try {
+                const compressedFile = await imageCompression(file, options);
+                setImageFile(compressedFile);
+            } catch (error) {
+                console.error('Error compressing image:', error);
+                alert("Failed to compress image. Please try another file.");
+            }
+        }
     };
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!currentItem || !currentUser?.cafeId) return;
 
-        const payload = { ...currentItem, cafeId: currentUser.cafeId };
+        setIsSubmitting(true);
 
-        if (currentItem.id) {
-            await apiService.updateMenuItem(currentItem.id, payload);
-        } else {
-            await apiService.createMenuItem(payload as Omit<MenuItem, 'id'>);
+        let imageUrl = currentItem.imageUrl || '';
+
+        try {
+            // If a new image file was selected, upload it
+            if (imageFile) {
+                imageUrl = await apiService.uploadImage(imageFile);
+            }
+
+            const payload = { ...currentItem, cafeId: currentUser.cafeId, imageUrl };
+
+            // Check if we are updating an existing item or creating a new one
+            if (currentItem.id) {
+                await apiService.updateMenuItem(currentItem.id, payload);
+            } else {
+                await apiService.createMenuItem(payload as Omit<MenuItem, 'id'>);
+            }
+
+            fetchMenuItems(); // Refresh the list
+            handleCloseModal();
+        } catch (error) {
+            console.error("Failed to save menu item:", error);
+            alert("Could not save the menu item. Please try again.");
+        } finally {
+            setIsSubmitting(false);
         }
-        fetchMenuItems();
-        handleCloseModal();
     };
+
 
     const handleDeleteConfirm = async () => {
         if (!itemToDelete) return;
@@ -105,10 +148,21 @@ const MenuManagement: React.FC = () => {
                     <datalist id="categories">
                         {categories.map(cat => <option key={cat} value={cat} />)}
                     </datalist>
-                    <input type="text" placeholder="Image URL (optional)" value={currentItem?.imageUrl || ''} onChange={e => setCurrentItem({...currentItem, imageUrl: e.target.value})} className="w-full p-2 border rounded"/>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700">Image</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"
+                        />
+                         {currentItem?.imageUrl && !imageFile && <img src={currentItem.imageUrl} alt="Current menu item" className="w-20 h-20 mt-2 object-cover rounded"/>}
+                    </div>
                     <div className="flex justify-end gap-2">
                         <button type="button" onClick={handleCloseModal} className="px-4 py-2 bg-slate-200 rounded">Cancel</button>
-                        <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded">Save</button>
+                        <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded" disabled={isSubmitting}>
+                            {isSubmitting ? 'Saving...' : 'Save'}
+                        </button>
                     </div>
                 </form>
             </Modal>
@@ -133,8 +187,9 @@ const ManagerManagement: React.FC = () => {
     const [managerToDelete, setManagerToDelete] = useState<User | null>(null);
 
     const fetchManagers = useCallback(async () => {
+        if (!currentUser?.cafeId) return;
         const allUsers = await apiService.getUsers();
-        const cafeManagers = allUsers.filter(user => user.cafeId === currentUser?.cafeId && user.role === UserRole.MANAGER);
+        const cafeManagers = allUsers.filter(user => user.cafeId === currentUser.cafeId && user.role === UserRole.MANAGER);
         setManagers(cafeManagers);
     }, [currentUser]);
 
@@ -243,14 +298,17 @@ const QrCodeGenerator: React.FC = () => {
     const [tableCount, setTableCount] = useState<number>(10);
     const tables = Array.from({ length: tableCount }, (_, i) => i + 1);
 
-    const getOrderUrl = (tableNo: number) => {
-        // Construct URL for the customer order page
-        const path = '/order';
-        const search = `?cafe_id=${currentUser?.cafeId}&table=${tableNo}`;
-        // Using HashRouter, so the structure is origin/#/path
-        const url = `${window.location.origin}${window.location.pathname.split('#')[0]}#${path}${search}`;
-        return url;
-    };
+    // const getOrderUrl = (tableNo: number) => {
+    //     const path = '/order';
+    //     const search = `?cafe_id=${currentUser?.cafeId}&table=${tableNo}`;
+    //     const url = `${window.location.origin}${window.location.pathname.split('#')[0]}#${path}${search}`;
+    //     return url;
+    // };
+const getOrderUrl = (tableNo: number) => {
+  const base = 'https://yummy-peas-eat.loca.lt/'; // replace with your network URL
+  const search = `?cafe_id=${currentUser?.cafeId}&table=${tableNo}`;
+  return `${base}#/order${search}`;
+};
 
     const getQrCodeApiUrl = (data: string) => {
         return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data)}`;

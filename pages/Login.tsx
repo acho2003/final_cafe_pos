@@ -110,16 +110,9 @@ const Login: React.FC = () => {
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-300" />
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-500">Demo Credentials</span>
-              </div>
+             
             </div>
-            <div className="mt-4 text-xs text-slate-600 space-y-2 bg-slate-50 p-3 rounded-md">
-                <p><strong className="font-semibold">Super Admin:</strong> super@admin.com</p>
-                <p><strong className="font-semibold">Café Admin:</strong> admin1@cafe.com</p>
-                <p><strong className="font-semibold">Manager:</strong> manager1@cafe.com</p>
-                <p><strong className="font-semibold">Password:</strong> password</p>
-            </div>
+            
           </div>
         </div>
       </div>

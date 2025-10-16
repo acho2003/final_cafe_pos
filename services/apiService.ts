@@ -4,6 +4,7 @@ const API_BASE_URL = 'http://localhost:5000/api'; // Your backend server URL
 
 const getAuthToken = () => localStorage.getItem('token');
 
+// Generic request helper for JSON data
 const request = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
     const token = getAuthToken();
     const headers: HeadersInit = {
@@ -65,4 +66,39 @@ export const apiService = {
     getOrderByTable: (cafeId: string, tableNo: number): Promise<Order | undefined> => request(`/orders/cafe/${cafeId}/table/${tableNo}`),
     createOrder: (data: { cafeId: string, tableNo: number, items: OrderItem[] }): Promise<Order> => request('/orders', { method: 'POST', body: JSON.stringify(data) }),
     updateOrder: (id: string, data: Partial<Order>): Promise<Order> => request(`/orders/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+
+    /**
+     * Uploads an image file to the server.
+     * Assumes the backend has an endpoint like '/upload/image' that accepts multipart/form-data
+     * and returns a JSON response with the image URL, e.g., { imageUrl: '...' }.
+     * @param image The image file to upload.
+     * @returns A promise that resolves to the URL of the uploaded image.
+     */
+    uploadImage: async (image: File): Promise<string> => {
+        const formData = new FormData();
+        formData.append('image', image); // The key 'image' must match what the backend expects
+
+        const token = getAuthToken();
+        const headers: HeadersInit = {};
+
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        // When using FormData with fetch, you MUST NOT set the 'Content-Type' header yourself.
+        // The browser will automatically set it to 'multipart/form-data' with the correct boundary.
+        const response = await fetch(`${API_BASE_URL}/upload/image`, { // Adjust the endpoint if needed
+            method: 'POST',
+            body: formData,
+            headers,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: response.statusText }));
+            throw new Error(errorData.message || 'Image upload failed');
+        }
+
+        const result: { imageUrl: string } = await response.json();
+        return result.imageUrl;
+    },
 };

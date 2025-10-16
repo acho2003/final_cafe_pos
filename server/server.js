@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path'); // <-- 1. Import the path module
 const connectDB = require('./config/db');
 
 // Check for essential environment variables
@@ -18,12 +19,20 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Define Routes
+// --- 2. Serve Static Files ---
+// Make the 'uploads' directory publicly accessible.
+// Any request starting with '/uploads' will serve a file from this directory.
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+// --- 3. Define Routes ---
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/cafes', require('./routes/cafeRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/menu-items', require('./routes/menuItemRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes')); // <-- Add the new upload route
+
 
 const PORT = process.env.PORT || 5000;
 

@@ -172,7 +172,7 @@ const OrderPage: React.FC = () => {
                                 className="w-full sm:w-64 px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                             />
                             <nav className="flex-1 overflow-x-auto whitespace-nowrap scrollbar-hide">
-                                <ul className="flex gap-4">
+                                {/* <ul className="flex gap-4">
                                     {allCategories.map(category => (
                                         <li key={category}>
                                             <a href={`#${category.replace(/\s+/g, '-')}`} className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors pb-1 border-b-2 border-transparent hover:border-indigo-500">
@@ -180,7 +180,7 @@ const OrderPage: React.FC = () => {
                                             </a>
                                         </li>
                                     ))}
-                                </ul>
+                                </ul> */}
                             </nav>
                         </div>
                     </div>

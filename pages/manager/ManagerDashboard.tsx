@@ -101,7 +101,7 @@ const OrderDetailsModal: React.FC<{ order: Order | null; onClose: () => void; on
                     </ul>
                     <div className="flex justify-between font-bold text-lg mt-2 pt-2">
                         <span>Total:</span>
-                        <span>${order.total.toFixed(2)}</span>
+                        <span>Nu.{order.total.toFixed(2)}</span>
                     </div>
                 </div>
 

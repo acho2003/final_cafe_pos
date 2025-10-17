@@ -95,7 +95,7 @@ const OrderDetailsModal: React.FC<{ order: Order | null; onClose: () => void; on
                                     <p className="font-medium">{item.quantity} x {item.name}</p>
                                     {item.notes && <p className="text-xs text-slate-500 italic">Note: {item.notes}</p>}
                                 </div>
-                                <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                                <p className="font-semibold">Nu.{(item.price * item.quantity).toFixed(2)}</p>
                             </li>
                         ))}
                     </ul>

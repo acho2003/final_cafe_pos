@@ -149,7 +149,7 @@ const NewOrderPage: React.FC = () => {
                                                     <h4 className="font-semibold text-slate-800">{item.name}</h4>
                                                     <p className="text-sm text-slate-600 flex-1">{item.description}</p>
                                                     <div className="flex justify-between items-center mt-2">
-                                                        <span className="font-bold text-slate-800">${item.price.toFixed(2)}</span>
+                                                        <span className="font-bold text-slate-800">Nu.{item.price.toFixed(2)}</span>
                                                         <button onClick={() => handleAddToCart(item)} className="p-1 text-indigo-600 rounded-full hover:bg-indigo-100">
                                                             <PlusCircle className="w-6 h-6"/>
                                                         </button>
@@ -197,7 +197,7 @@ const NewOrderPage: React.FC = () => {
                                         <div key={item.menuItemId} className="text-sm">
                                             <div className="flex justify-between items-start">
                                                 <p className="font-medium">{item.name}</p>
-                                                <p className="font-semibold text-slate-800">${(item.price * item.quantity).toFixed(2)}</p>
+                                                <p className="font-semibold text-slate-800">Nu.{(item.price * item.quantity).toFixed(2)}</p>
                                             </div>
                                             <div className="flex items-center mt-1">
                                                 <div className="flex items-center border rounded-md">
@@ -214,7 +214,7 @@ const NewOrderPage: React.FC = () => {
                         <div className="p-4 border-t bg-slate-50 rounded-b-lg">
                             <div className="flex justify-between font-bold text-lg mb-4">
                                 <span>Total:</span>
-                                <span>${total.toFixed(2)}</span>
+                                <span>Nu.{total.toFixed(2)}</span>
                             </div>
                             <button
                                 type="button"

@@ -128,7 +128,7 @@ const MenuManagement: React.FC = () => {
                             <tr key={item.id} className="bg-white border-b hover:bg-slate-50">
                                 <td className="px-6 py-4 font-medium">{item.name}</td>
                                 <td className="px-6 py-4">{item.category}</td>
-                                <td className="px-6 py-4">${item.price.toFixed(2)}</td>
+                                <td className="px-6 py-4">Nu.{item.price.toFixed(2)}</td>
                                 <td className="px-6 py-4">{item.description}</td>
                                 <td className="px-6 py-4 space-x-2">
                                     <button onClick={() => handleOpenModal(item)} className="text-blue-600 hover:text-blue-800"><Edit className="w-5 h-5"/></button>
@@ -393,7 +393,7 @@ const ReportsManagement: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white p-6 rounded-lg shadow">
                     <h3 className="text-sm font-medium text-slate-500">Total Revenue</h3>
-                    <p className="mt-1 text-3xl font-semibold text-slate-900">${totalRevenue.toFixed(2)}</p>
+                    <p className="mt-1 text-3xl font-semibold text-slate-900">Nu.{totalRevenue.toFixed(2)}</p>
                 </div>
                  <div className="bg-white p-6 rounded-lg shadow">
                     <h3 className="text-sm font-medium text-slate-500">Total Completed Orders</h3>
@@ -401,7 +401,7 @@ const ReportsManagement: React.FC = () => {
                 </div>
                  <div className="bg-white p-6 rounded-lg shadow">
                     <h3 className="text-sm font-medium text-slate-500">Average Order Value</h3>
-                    <p className="mt-1 text-3xl font-semibold text-slate-900">${averageOrderValue.toFixed(2)}</p>
+                    <p className="mt-1 text-3xl font-semibold text-slate-900">Nu.{averageOrderValue.toFixed(2)}</p>
                 </div>
             </div>
              <div className="bg-white shadow rounded-lg">

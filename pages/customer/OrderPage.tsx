@@ -201,7 +201,7 @@ const OrderPage: React.FC = () => {
                                                 <h4 className="font-semibold text-slate-800">{item.name}</h4>
                                                 <p className="text-sm text-slate-600 flex-1">{item.description}</p>
                                                 <div className="flex justify-between items-center mt-2">
-                                                    <span className="font-bold text-slate-800">${item.price.toFixed(2)}</span>
+                                                    <span className="font-bold text-slate-800">Nu.{item.price.toFixed(2)}</span>
                                                     <button disabled={orderLocked} onClick={() => handleAddToCart(item)} className="p-1 text-indigo-600 rounded-full hover:bg-indigo-100 disabled:text-slate-400 disabled:cursor-not-allowed">
                                                         <PlusCircle className="w-6 h-6"/>
                                                     </button>
@@ -243,9 +243,9 @@ const OrderPage: React.FC = () => {
                                             <div className="flex justify-between items-start">
                                                 <div>
                                                     <p className="font-semibold">{item.name}</p>
-                                                    <p className="text-sm text-slate-500">${item.price.toFixed(2)}</p>
+                                                    <p className="text-sm text-slate-500">Nu.{item.price.toFixed(2)}</p>
                                                 </div>
-                                                <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                                                <p className="font-semibold">Nu.{(item.price * item.quantity).toFixed(2)}</p>
                                             </div>
                                             <div className="flex items-center mt-1">
                                                 <div className="flex items-center border rounded-md">
@@ -268,7 +268,7 @@ const OrderPage: React.FC = () => {
                                 <div className="mt-4 border-t pt-4">
                                     <div className="flex justify-between font-bold text-lg">
                                         <span>Total</span>
-                                        <span>${total.toFixed(2)}</span>
+                                        <span>Nu.{total.toFixed(2)}</span>
                                     </div>
                                     <button
                                         onClick={handleSubmitOrder}

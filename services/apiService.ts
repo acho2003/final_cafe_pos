@@ -1,6 +1,6 @@
 import { Cafe, User, MenuItem, Order, OrderItem } from '../types';
 
-const API_BASE_URL = 'http://localhost:5000/api'; // Your backend server URL
+const API_BASE_URL = 'https://final-cafe-pos.onrender.com/api'; // Your backend server URL
 
 const getAuthToken = () => localStorage.getItem('token');
 

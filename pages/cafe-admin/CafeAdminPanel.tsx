@@ -298,17 +298,12 @@ const QrCodeGenerator: React.FC = () => {
     const [tableCount, setTableCount] = useState<number>(10);
     const tables = Array.from({ length: tableCount }, (_, i) => i + 1);
 
-    // const getOrderUrl = (tableNo: number) => {
-    //     const path = '/order';
-    //     const search = `?cafe_id=${currentUser?.cafeId}&table=${tableNo}`;
-    //     const url = `${window.location.origin}${window.location.pathname.split('#')[0]}#${path}${search}`;
-    //     return url;
-    // };
-const getOrderUrl = (tableNo: number) => {
-  const base = 'https://yummy-peas-eat.loca.lt/'; // replace with your network URL
-  const search = `?cafe_id=${currentUser?.cafeId}&table=${tableNo}`;
-  return `${base}#/order${search}`;
-};
+    const getOrderUrl = (tableNo: number) => {
+        const path = '/order';
+        const search = `?cafe_id=${currentUser?.cafeId}&table=${tableNo}`;
+        const url = `${window.location.origin}${window.location.pathname.split('#')[0]}#${path}${search}`;
+        return url;
+    };
 
     const getQrCodeApiUrl = (data: string) => {
         return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data)}`;

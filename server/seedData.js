@@ -56,7 +56,7 @@ const MOCK_ORDERS = [
     id: 'order1',
     cafeId: 'CAFE1',
     tableNo: 5,
-    items: [{ menuItemId: 'menu1', name: 'Espresso', price: 2.50, quantity: 2, notes: 'Extra hot' }],
+    items: [{ menuItemId: 'menu1', name: 'Espresso', price: 2.50, quantity: 2, phoneNumber:"17777777",notes: 'Extra hot' }],
     total: 5.00,
     status: OrderStatus.PENDING,
     paymentStatus: PaymentStatus.PENDING,
@@ -69,8 +69,8 @@ const MOCK_ORDERS = [
     cafeId: 'CAFE1',
     tableNo: 2,
     items: [
-        { menuItemId: 'menu2', name: 'Cappuccino', price: 3.50, quantity: 1 },
-        { menuItemId: 'menu3', name: 'Croissant', price: 2.75, quantity: 1 }
+        { menuItemId: 'menu2', name: 'Cappuccino',phoneNumber:"17777777", price: 3.50, quantity: 1 },
+        { menuItemId: 'menu3', name: 'Croissant', phoneNumber:"17777777", price: 2.75, quantity: 1 }
     ],
     total: 6.25,
     status: OrderStatus.PREPARING,
@@ -83,7 +83,7 @@ const MOCK_ORDERS = [
     id: 'order3',
     cafeId: 'CAFE1',
     tableNo: 8,
-    items: [{ menuItemId: 'menu4', name: 'Avocado Toast', price: 6.50, quantity: 1 }],
+    items: [{ menuItemId: 'menu4', name: 'Avocado Toast',phoneNumber:"17777777", price: 6.50, quantity: 1 }],
     total: 6.50,
     status: OrderStatus.COMPLETED,
     paymentStatus: PaymentStatus.PAID,

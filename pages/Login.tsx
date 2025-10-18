@@ -18,30 +18,28 @@ const Login: React.FC = () => {
     setIsLoading(true);
 
     try {
-        const user = await login(email, password);
-        if (user) {
-          switch (user.role) {
-            case UserRole.SUPER_ADMIN:
-              navigate('/super-admin/cafes');
-              break;
-            case UserRole.CAFE_ADMIN:
-              navigate('/cafe-admin/orders');
-              break;
-            case UserRole.MANAGER:
-              navigate('/manager/dashboard');
-              break;
-            default:
-              navigate('/');
-          }
-        } else {
-           // This case might not be hit if login function always throws on failure.
-           setError('Login failed. Please try again.');
+      const user = await login(email, password);
+      if (user) {
+        switch (user.role) {
+          case UserRole.SUPER_ADMIN:
+            navigate('/super-admin/cafes');
+            break;
+          case UserRole.CAFE_ADMIN:
+            navigate('/cafe-admin/orders');
+            break;
+          case UserRole.MANAGER:
+            navigate('/manager/dashboard');
+            break;
+          default:
+            navigate('/');
         }
+      } else {
+        setError('Login failed. Please try again.');
+      }
     } catch (err: any) {
-        // Display the actual error message from the API service
-        setError(err.message || 'An unknown error occurred.');
+      setError(err.message || 'An unknown error occurred.');
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -49,8 +47,10 @@ const Login: React.FC = () => {
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center items-center">
-            <Coffee className="h-12 w-auto text-indigo-600" />
-            <h2 className="ml-4 text-center text-3xl font-extrabold text-slate-900">Sign in to Café POS</h2>
+          <Coffee className="h-12 w-auto text-indigo-600" />
+          <h2 className="ml-4 text-center text-3xl font-extrabold text-slate-900">
+            Sign in to Café POS
+          </h2>
         </div>
       </div>
 
@@ -92,7 +92,7 @@ const Login: React.FC = () => {
                 />
               </div>
             </div>
-            
+
             {error && <p className="text-sm text-red-600">{error}</p>}
 
             <div>
@@ -105,14 +105,17 @@ const Login: React.FC = () => {
               </button>
             </div>
           </form>
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-300" />
-              </div>
-             
-            </div>
-            
+
+          {/* 💡 Trial Accounts Section */}
+          <div className="mt-8 text-sm text-slate-600">
+            <p className="font-semibold text-slate-800 mb-2">💡 Trial Login Accounts:</p>
+            <ul className="space-y-1">
+              <li><strong>Super Admin:</strong> super@admin.com / <code>password</code></li>
+              <li><strong>Café Admin 1:</strong> admin1@cafe.com / <code>password</code></li>
+              <li><strong>Café Admin 2:</strong> admin2@cafe.com / <code>password</code></li>
+              <li><strong>Manager 1:</strong> manager1@cafe.com / <code>password</code></li>
+              <li><strong>Manager 2:</strong> manager2@cafe.com / <code>password</code></li>
+            </ul>
           </div>
         </div>
       </div>

@@ -64,7 +64,7 @@ export const apiService = {
     // Orders
     getOrders: (cafeId: string): Promise<Order[]> => request(`/orders/cafe/${cafeId}`),
     getOrderByTable: (cafeId: string, tableNo: number): Promise<Order | undefined> => request(`/orders/cafe/${cafeId}/table/${tableNo}`),
-    createOrder: (data: { cafeId: string, tableNo: number, items: OrderItem[] }): Promise<Order> => request('/orders', { method: 'POST', body: JSON.stringify(data) }),
+    createOrder: (data: { cafeId: string, tableNo: number, phoneNumber: string, items: OrderItem[] }): Promise<Order> => request('/orders', { method: 'POST', body: JSON.stringify(data) }),
     updateOrder: (id: string, data: Partial<Order>): Promise<Order> => request(`/orders/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
 
     /**

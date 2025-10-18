@@ -14,6 +14,7 @@ const OrderPage: React.FC = () => {
     const [cafe, setCafe] = useState<Cafe | null>(null);
     const [menu, setMenu] = useState<MenuItem[]>([]);
     const [cart, setCart] = useState<Cart>({});
+    const [phoneNumber, setPhoneNumber] = useState<string>(''); // State for phone number
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [orderStatus, setOrderStatus] = useState<'idle' | 'placing' | 'placed'>('idle');
@@ -39,6 +40,10 @@ const OrderPage: React.FC = () => {
             const order = await apiService.getOrderByTable(cafeId, parseInt(tableNo, 10));
             if (order) {
                 setExistingOrder(order);
+                // Pre-fill phone number if it exists on the order
+                if (order.phoneNumber) {
+                    setPhoneNumber(order.phoneNumber);
+                }
                 const initialCart = order.items.reduce((acc, item) => {
                     acc[item.menuItemId] = item;
                     return acc;
@@ -78,7 +83,6 @@ const OrderPage: React.FC = () => {
     }, [menu, menuSearch]);
 
     const groupedMenu = useMemo(() => {
-        // Fix: Explicitly typed the accumulator in the reduce function to ensure correct type inference for groupedMenu.
         return filteredMenu.reduce((acc: Record<string, MenuItem[]>, item) => {
             (acc[item.category] = acc[item.category] || []).push(item);
             return acc;
@@ -120,19 +124,23 @@ const OrderPage: React.FC = () => {
         }));
     };
 
-    // Fix: Explicitly typed cartItems as OrderItem[] to resolve type inference issues with Object.values.
     const cartItems: OrderItem[] = Object.values(cart);
     const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     const handleSubmitOrder = async () => {
-        if (cartItems.length === 0 || !cafeId || !tableNo) return;
+        if (cartItems.length === 0 || !cafeId || !tableNo || !phoneNumber.trim()) {
+            if(!phoneNumber.trim()){
+                alert("Please provide a phone number to place the order.");
+            }
+            return;
+        }
         
         setOrderStatus('placing');
         try {
             if (existingOrder) {
-                await apiService.updateOrder(existingOrder.id, { items: cartItems });
+                await apiService.updateOrder(existingOrder.id, { items: cartItems, phoneNumber });
             } else {
-                await apiService.createOrder({ cafeId, tableNo: parseInt(tableNo, 10), items: cartItems });
+                await apiService.createOrder({ cafeId, tableNo: parseInt(tableNo, 10), items: cartItems, phoneNumber });
             }
             setOrderStatus('placed');
             setTimeout(() => {
@@ -161,7 +169,6 @@ const OrderPage: React.FC = () => {
 
             <main className="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
-                     {/* Sticky Menu Navigation */}
                     <div className="sticky top-20 bg-slate-50/95 backdrop-blur-sm z-10 py-3 mb-4 border-b">
                         <div className="flex flex-col sm:flex-row gap-4 items-center">
                             <input 
@@ -172,15 +179,6 @@ const OrderPage: React.FC = () => {
                                 className="w-full sm:w-64 px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                             />
                             <nav className="flex-1 overflow-x-auto whitespace-nowrap scrollbar-hide">
-                                {/* <ul className="flex gap-4">
-                                    {allCategories.map(category => (
-                                        <li key={category}>
-                                            <a href={`#${category.replace(/\s+/g, '-')}`} className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors pb-1 border-b-2 border-transparent hover:border-indigo-500">
-                                                {category}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul> */}
                             </nav>
                         </div>
                     </div>
@@ -238,6 +236,21 @@ const OrderPage: React.FC = () => {
                         ) : (
                             <>
                                 <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                                    {/* Phone Number Input */}
+                                    <div className="mb-4">
+                                        <label htmlFor="phone-number" className="block text-sm font-medium text-slate-700">Phone Number</label>
+                                        <input
+                                            id="phone-number"
+                                            type="text"
+                                            value={phoneNumber}
+                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                            placeholder="Enter your phone number"
+                                            disabled={orderLocked}
+                                            className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-slate-100 disabled:cursor-not-allowed"
+                                            required
+                                        />
+                                    </div>
+
                                     {cartItems.map(item => (
                                         <div key={item.menuItemId} className="flex flex-col">
                                             <div className="flex justify-between items-start">
@@ -272,7 +285,7 @@ const OrderPage: React.FC = () => {
                                     </div>
                                     <button
                                         onClick={handleSubmitOrder}
-                                        disabled={orderStatus === 'placing' || orderLocked}
+                                        disabled={orderStatus === 'placing' || orderLocked || !phoneNumber.trim()}
                                         className="w-full mt-4 bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-slate-400"
                                     >
                                         {orderStatus === 'placing' ? 'Placing Order...' : (orderStatus === 'placed' ? 'Order Updated!' : (existingOrder ? 'Update Order' : 'Place Order'))}

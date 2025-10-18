@@ -6,6 +6,15 @@ const Order = require('../models/Order');
 // @desc    Get all orders for a specific cafe
 router.get('/cafe/:cafeId', async (req, res) => {
     try {
+        const orderss = await Order.find({ cafeId: req.params.cafeId }).sort({ createdAt: -1 });
+        res.json(orderss);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.get('/cafe/:cafeId/recents', async (req, res) => {
+    try {
         const orders = await Order.find({ cafeId: req.params.cafeId }).sort({ createdAt: -1 });
         res.json(orders);
     } catch (err) {
@@ -35,7 +44,7 @@ router.post('/', async (req, res) => {
     const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const id = `order${Date.now()}`;
     try {
-        const newOrder = new Order({ id, cafeId, tableNo, items, total });
+        const newOrder = new Order({ id, cafeId, tableNo, items, total, phoneNumber });
         const savedOrder = await newOrder.save();
         res.status(201).json(savedOrder);
     } catch (err) {

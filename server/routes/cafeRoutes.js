@@ -16,6 +16,25 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/:cafeId/recent', async (req, res) => {
+    const { cafeId } = req.params;
+
+    // Calculate the time 2 hours ago
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+
+    try {
+        const cafes = await Cafe.find({
+            cafeId: cafeId,               // same cafeId
+            createdAt: { $gte: twoHoursAgo } // created within last 2 hours
+        });
+
+        res.json(cafes);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+
 // @route   POST /api/cafes
 // @desc    Create a cafe
 router.post('/', async (req, res) => {

@@ -12,6 +12,7 @@ const NewOrderPage: React.FC = () => {
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
     const [cart, setCart] = useState<{ [key: string]: OrderItem }>({});
     const [tableNo, setTableNo] = useState<number | ''>('');
+    const [phoneNumber, setPhoneNumber] = useState<string>(''); // State for phone number
     const [menuSearch, setMenuSearch] = useState('');
     const [isCreating, setIsCreating] = useState(false);
 
@@ -58,12 +59,10 @@ const NewOrderPage: React.FC = () => {
         });
     };
 
-    // Fix: Explicitly type cartItems to ensure correct type inference.
     const cartItems: OrderItem[] = Object.values(cart);
     const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     const groupedMenu = useMemo(() => {
-        // Fix: Explicitly type the accumulator in the reduce function for correct type inference.
         return menuItems.reduce((acc: Record<string, MenuItem[]>, item) => {
             (acc[item.category] = acc[item.category] || []).push(item);
             return acc;
@@ -90,8 +89,8 @@ const NewOrderPage: React.FC = () => {
     }, [groupedMenu, menuSearch]);
 
     const handleCreateOrder = async () => {
-        if (!currentUser?.cafeId || !tableNo || cartItems.length === 0) {
-            alert("Please provide a table number and add items to the order.");
+        if (!currentUser?.cafeId || !tableNo || !phoneNumber || cartItems.length === 0) {
+            alert("Please provide a table number, phone number, and add items to the order.");
             return;
         }
         
@@ -100,9 +99,10 @@ const NewOrderPage: React.FC = () => {
             await apiService.createOrder({
                 cafeId: currentUser.cafeId,
                 tableNo: tableNo,
+                phoneNumber: phoneNumber, // Include phone number in the order data
                 items: cartItems
             });
-            handleGoBack(); // Navigate back to the dashboard on success
+            handleGoBack();
         } catch (error) {
             console.error("Failed to create order", error);
             alert("Could not create order. Please try again.");
@@ -121,7 +121,6 @@ const NewOrderPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left: Menu */}
                 <div className="lg:col-span-2">
                     <div className="mb-4">
                          <input 
@@ -169,7 +168,6 @@ const NewOrderPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Right: Order Summary */}
                 <div className="lg:col-span-1">
                     <div className="sticky top-24 bg-white rounded-lg shadow">
                         <h2 className="text-xl font-semibold p-4 border-b">Order Summary</h2>
@@ -183,6 +181,17 @@ const NewOrderPage: React.FC = () => {
                                     onChange={(e) => setTableNo(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
                                     placeholder="e.g., 5"
                                     min="1"
+                                    className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="phone-number" className="block text-sm font-medium text-slate-700">Phone Number</label>
+                                <input
+                                    id="phone-number"
+                                    type="text"
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    placeholder="e.g., 17123456"
                                     className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                 />
                             </div>
@@ -219,7 +228,7 @@ const NewOrderPage: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={handleCreateOrder}
-                                disabled={!tableNo || cartItems.length === 0 || isCreating}
+                                disabled={!tableNo || !phoneNumber || cartItems.length === 0 || isCreating}
                                 className="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 disabled:bg-slate-400 transition-colors"
                             >
                                 {isCreating ? 'Creating...' : 'Create Order'}
